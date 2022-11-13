@@ -57,13 +57,14 @@ public class UserController {
 			return ResponseEntity.badRequest().build();
 		}
 
-		SecureRandom random = new SecureRandom();
-		byte[] salt = new byte[16];
-		random.nextBytes(salt);
-		String userSalt = Base64.getEncoder().encodeToString(salt);
-		user.setSalt(userSalt);
+//		SecureRandom random = new SecureRandom();
+//		byte[] salt = new byte[16];
+//		random.nextBytes(salt);
+//		String userSalt = Base64.getEncoder().encodeToString(salt);
+//		user.setSalt(userSalt);
 
-		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword() + user.getSalt()));
+		//user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword() + user.getSalt()));
+		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 
 		userRepository.save(user);
 		return ResponseEntity.ok(user);
