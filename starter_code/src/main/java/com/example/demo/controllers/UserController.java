@@ -1,11 +1,6 @@
 package com.example.demo.controllers;
 
-import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +19,7 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	
+
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -49,7 +44,9 @@ public class UserController {
 	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
 		User user = new User();
 		user.setUsername(createUserRequest.getUsername());
+
 		Cart cart = new Cart();
+
 		cartRepository.save(cart);
 		user.setCart(cart);
 
@@ -57,13 +54,6 @@ public class UserController {
 			return ResponseEntity.badRequest().build();
 		}
 
-//		SecureRandom random = new SecureRandom();
-//		byte[] salt = new byte[16];
-//		random.nextBytes(salt);
-//		String userSalt = Base64.getEncoder().encodeToString(salt);
-//		user.setSalt(userSalt);
-
-		//user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword() + user.getSalt()));
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 
 		userRepository.save(user);
