@@ -1,5 +1,7 @@
 package com.example.demo.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +21,8 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+
+	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	private UserRepository userRepository;
@@ -45,18 +49,22 @@ public class UserController {
 		User user = new User();
 		user.setUsername(createUserRequest.getUsername());
 
+		log.info("Username set with " + createUserRequest.getUsername() + ".");
+
 		Cart cart = new Cart();
 
 		cartRepository.save(cart);
 		user.setCart(cart);
 
 		if(createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
+			log.warn("Password too short or wrong. Cannot create user.");
 			return ResponseEntity.badRequest().build();
 		}
 
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 
 		userRepository.save(user);
+		log.info("User successfully created.");
 		return ResponseEntity.ok(user);
 	}
 	
