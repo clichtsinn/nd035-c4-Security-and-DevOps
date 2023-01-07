@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.util.Optional;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,5 +59,51 @@ public class UserControllerTest {
         assertEquals(0, user.getId());
         assertEquals("test", user.getUsername());
         assertEquals("thisIsHashed", user.getPassword());
+    }
+
+    @Test
+    public void noUser() throws Exception {
+
+        String testUser = "test";
+
+        final ResponseEntity<User> response = userController.findByUserName(testUser);
+
+        assertNotNull(response);
+        assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
+    public void findUserById() throws Exception {
+
+        when(encoder.encode("testPassword")).thenReturn("thisIsHashed");
+
+        CreateUserRequest request = new CreateUserRequest();
+        request.setUsername("test");
+        request.setPassword("testPassword");
+        request.setConfirmPassword("testPassword");
+
+        final ResponseEntity<User> response = userController.createUser(request);
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+
+        User user = response.getBody();
+        assertNotNull(user);
+        assertEquals(0, user.getId());
+        assertEquals("test", user.getUsername());
+        assertEquals("thisIsHashed", user.getPassword());
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        final ResponseEntity<User> responseId = userController.findById(user.getId());
+
+        assertNotNull(responseId);
+        assertEquals(200, responseId.getStatusCodeValue());
+
+        User userId = responseId.getBody();
+        assertNotNull(userId);
+        assertEquals(0, userId.getId());
+        assertEquals("test", userId.getUsername());
+        assertEquals("thisIsHashed", userId.getPassword());
     }
 }
