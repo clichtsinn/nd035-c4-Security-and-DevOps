@@ -47,6 +47,12 @@ public class UserController {
 	@PostMapping("/create")
 	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
 		User user = new User();
+
+		if(userRepository.findByUsername(createUserRequest.getUsername()) != null) {
+			log.warn("Username exists already. Cannot create user.");
+			return ResponseEntity.badRequest().build();
+		}
+
 		user.setUsername(createUserRequest.getUsername());
 
 		log.info("Username set with " + createUserRequest.getUsername() + ".");
@@ -56,7 +62,7 @@ public class UserController {
 		cartRepository.save(cart);
 		user.setCart(cart);
 
-		if(createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
+		if(createUserRequest.getPassword() == null || createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
 			log.warn("Password too short or wrong. Cannot create user.");
 			return ResponseEntity.badRequest().build();
 		}
