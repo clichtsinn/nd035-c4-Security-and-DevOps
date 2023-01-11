@@ -41,6 +41,9 @@ public class UserController {
 	@GetMapping("/{username}")
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			log.warn("Exception: User " + username + " not found.");
+		}
 		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
 	}
 	
@@ -49,7 +52,7 @@ public class UserController {
 		User user = new User();
 
 		if(userRepository.findByUsername(createUserRequest.getUsername()) != null) {
-			log.warn("Username exists already. Cannot create user.");
+			log.warn("Exception: User " + createUserRequest.getUsername() + " already exists. Cannot create user.");
 			return ResponseEntity.badRequest().build();
 		}
 
@@ -63,14 +66,14 @@ public class UserController {
 		user.setCart(cart);
 
 		if(createUserRequest.getPassword() == null || createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
-			log.warn("Password too short or wrong. Cannot create user.");
+			log.warn("Exception: Password too short or wrong. Cannot create user.");
 			return ResponseEntity.badRequest().build();
 		}
 
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 
 		userRepository.save(user);
-		log.info("User successfully created.");
+		log.info("Success: User " + user.getUsername() + " created.");
 		return ResponseEntity.ok(user);
 	}
 	

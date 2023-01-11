@@ -40,19 +40,19 @@ public class CartController {
 	public ResponseEntity<Cart> addTocart(@RequestBody ModifyCartRequest request) {
 		User user = userRepository.findByUsername(request.getUsername());
 		if(user == null) {
-			log.warn("No user found. Cannot add to cart.");
+			log.warn("Exception: User " + request.getUsername() + " not found. Cannot add to cart.");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
 		if(!item.isPresent()) {
-			log.warn("No item found. Cannot add to cart.");
+			log.warn("Exception: No item found. Cannot add to cart.");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
 		IntStream.range(0, request.getQuantity())
 			.forEach(i -> cart.addItem(item.get()));
 		cartRepository.save(cart);
-		log.info("Successfully added to cart.");
+		log.info("Success: Added to cart.");
 		return ResponseEntity.ok(cart);
 	}
 	
@@ -60,19 +60,19 @@ public class CartController {
 	public ResponseEntity<Cart> removeFromcart(@RequestBody ModifyCartRequest request) {
 		User user = userRepository.findByUsername(request.getUsername());
 		if(user == null) {
-			log.warn("No user found. Cannot remove from cart.");
+			log.warn("Exception: User " + request.getUsername() + " not found. Cannot remove from cart.");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
 		if(!item.isPresent()) {
-			log.warn("No item found. Cannot remove from cart.");
+			log.warn("Exception: No item found. Cannot remove from cart.");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
 		IntStream.range(0, request.getQuantity())
 			.forEach(i -> cart.removeItem(item.get()));
 		cartRepository.save(cart);
-		log.info("Successfully removed from cart.");
+		log.info("Success: Removed from cart.");
 		return ResponseEntity.ok(cart);
 	}
 		
