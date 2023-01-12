@@ -76,4 +76,15 @@ public class OrderControllerTest {
         assertEquals(new BigDecimal("2.99"), ordersRe.get(0).getTotal());
         assertEquals("Round Widget", ordersRe.get(0).getItems().get(0).getName());
     }
+
+    @Test
+    public void noOrderHistory() throws Exception {
+
+        String username = "test";
+
+        final ResponseEntity<List<UserOrder>> response = orderController.getOrdersForUser(username);
+
+        assertNotNull(response);
+        assertEquals(404, response.getStatusCodeValue());
+    }
 }
